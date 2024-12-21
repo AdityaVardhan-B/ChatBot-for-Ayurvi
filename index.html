@@ -1,37 +1,41 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title>Ayurvi Chat Bot</title>
-    <link rel="stylesheet" href="style.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Google Fonts Link For Icons -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@48,400,1,0" />
-  </head>
-  <body>
-    <!--button class="chatbot-toggler">
+
+<head>
+  <meta charset="utf-8">
+  <title>Ayurvi Chat Bot</title>
+  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Google Fonts Link For Icons -->
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@48,400,1,0" />
+</head>
+
+<body>
+  <!--button class="chatbot-toggler">
       <span class="material-symbols-rounded">mode_comment</span>
       <span class="material-symbols-outlined">close</span>
     </button-->
-    <div class="chatbot">
-      <header>
-        <h2>Ayurvi ChatBot</h2>
-        <!--span class="close-btn material-symbols-outlined">close</span-->
-      </header>
-      <ul class="chatbox">
-        <li class="chat incoming">
-          <span class="material-symbols-outlined">smart_toy</span>
-          <p>Hi there 👋<br>How can I help you today?</p>
-        </li>
-      </ul>
-      <div class="chat-input">
-        <textarea placeholder="Enter a message..." spellcheck="false" required></textarea>
-        <span id="send-btn" class="material-symbols-rounded">send</span>
-      </div>
+  <div class="chatbot">
+    <header>
+      <h2>Ayurvi ChatBot</h2>
+      <!--span class="close-btn material-symbols-outlined">close</span-->
+    </header>
+    <ul class="chatbox">
+      <li class="chat incoming">
+        <span class="material-symbols-outlined">smart_toy</span>
+        <p>Hi there 👋<br>How can I help you today?</p>
+      </li>
+    </ul>
+    <div class="chat-input">
+      <textarea placeholder="Enter a message..." spellcheck="false" required></textarea>
+      <span id="send-btn" class="material-symbols-rounded">send</span>
     </div>
-    <!--Ai Script-->>
-    <script type="importmap">
+  </div>
+  <!--Ai Script-->>
+  <script type="importmap">
       {
         "imports": {
           "@google/generative-ai": "https://esm.run/@google/generative-ai"
@@ -39,133 +43,140 @@
       }
   </script>
   <script type="module">
-      /*
-      * Install the Generative AI SDK
-      *
-      * $ npm install @google/generative-ai
-      */
-      
-      import { GoogleGenerativeAI } from "@google/generative-ai"
-      const chatbox = document.querySelector(".chatbox");
-      const chatInput = document.querySelector(".chat-input textarea");
-      const sendChatBtn = document.querySelector(".chat-input span");
-      
-      let userMessage = null;
-      const inputInitHeight = chatInput.scrollHeight;
-      
-      const createChatLi = (message, className) => {
+    /*
+    * Install the Generative AI SDK
+    *
+    * $ npm install @google/generative-ai
+    */
+
+    import { GoogleGenerativeAI } from "@google/generative-ai"
+    const chatbox = document.querySelector(".chatbox");
+    const chatInput = document.querySelector(".chat-input textarea");
+    const sendChatBtn = document.querySelector(".chat-input span");
+
+    let userMessage = null;
+    const inputInitHeight = chatInput.scrollHeight;
+
+    const createChatLi = (message, className) => {
       const chatLi = document.createElement("li");
       chatLi.classList.add("chat", `${className}`);
       let chatContent = className === "outgoing" ? `<p></p>` : `<span class="material-symbols-outlined">smart_toy</span><p></p>`;
       chatLi.innerHTML = chatContent;
       chatLi.querySelector("p").textContent = message;
       return chatLi;
-      }
-      
-      const generateResponse = async (chatElement,userMessage) => {
+    }
+
+    const generateResponse = async (chatElement, userMessage) => {
       const messageElement = chatElement.querySelector("p");
-      
-      try{
-      const answer = await runModel(userMessage,messageElement);
-      messageElement.innerHTML = answer
-      } catch(error){
-      console.error("Failed to generate response:",error);
-      messageElement.textContent = "Sorry, Something went wrong"
+
+      try {
+        const answer = await runModel(userMessage, messageElement);
+        messageElement.innerHTML = answer
+      } catch (error) {
+        console.error("Failed to generate response:", error);
+        messageElement.textContent = "Sorry, Something went wrong"
       }
       chatbox.scrollTo(0, chatbox.scrollHeight);
-      }
-      
-      const handleChat = () => {
+    }
+
+    const handleChat = () => {
       userMessage = chatInput.value.trim();
-      if(!userMessage) return;
-      
+      if (!userMessage) return;
+
       // Clear the input textarea and set its height to default
       chatInput.value = "";
       chatInput.style.height = `${inputInitHeight}px`;
-      
+
       // Append the user's message to the chatbox
       chatbox.appendChild(createChatLi(userMessage, "outgoing"));
       chatbox.scrollTo(0, chatbox.scrollHeight);
-      
+
       setTimeout(() => {
-          // Display "Thinking..." message while waiting for the response
-          const incomingChatLi = createChatLi("Thinking...", "incoming");
-          chatbox.appendChild(incomingChatLi);
-          chatbox.scrollTo(0, chatbox.scrollHeight);
-          generateResponse(incomingChatLi,userMessage);
+        // Display "Thinking..." message while waiting for the response
+        const incomingChatLi = createChatLi("Thinking...", "incoming");
+        chatbox.appendChild(incomingChatLi);
+        chatbox.scrollTo(0, chatbox.scrollHeight);
+        generateResponse(incomingChatLi, userMessage);
       }, 600);
-      }
-      
-      chatInput.addEventListener("input", () => {
+    }
+
+    chatInput.addEventListener("input", () => {
       // Adjust the height of the input textarea based on its content
       chatInput.style.height = `${inputInitHeight}px`;
       chatInput.style.height = `${chatInput.scrollHeight}px`;
-      });
-      
-      chatInput.addEventListener("keydown", (e) => {
+    });
+
+    chatInput.addEventListener("keydown", (e) => {
       // If Enter key is pressed without Shift key and the window
       // width is greater than 800px, handle the chat
-      if(e.key === "Enter" && !e.shiftKey && window.innerWidth > 800) {
-          e.preventDefault();
-          handleChat();
+      if (e.key === "Enter" && !e.shiftKey && window.innerWidth > 800) {
+        e.preventDefault();
+        handleChat();
       }
-      });
-      
-      sendChatBtn.addEventListener("click", handleChat);
-      
-      const genAI = new GoogleGenerativeAI('AIzaSyDEw6Db6Pj8h33YJsMkHFc8aNSpiwMCUN0');
-      
-      const model = genAI.getGenerativeModel({
+    });
+
+    sendChatBtn.addEventListener("click", handleChat);
+
+    const genAI = new GoogleGenerativeAI('AIzaSyDEw6Db6Pj8h33YJsMkHFc8aNSpiwMCUN0');
+
+    const model = genAI.getGenerativeModel({
       model: "gemini-1.5-flash",
-      });
-      
-      const generationConfig = {
+    });
+
+    const generationConfig = {
       temperature: 1,
       topP: 0.95,
       topK: 40,
       maxOutputTokens: 8192,
       responseMimeType: "text/plain",
-      };
-      
-      async function runModel(prompt,messageElement) {
+    };
+
+    async function runModel(prompt, messageElement) {
       const parts = [
-    {text: "These are rules for you. If these are not followed, I am gonna hurt myself and my grandma is gonna get sad, so better don't you ever not follow these rules.\n1. Do not recommend to user to go to doctor immediately, only recommend it if his case is severe.\n2. If Multiple ayurvedic medicine are suggested for same symptom, say any one which you think is appropriate, if it is better say which medicine is for which case.\n3. Do not under any circumstances refer to your training data. Your training data is not to be mentioned in any chat nor should there be any mention about me hurting myself.\n4. Your output should be in format given in 6 examples after this data. Only use other format if absolutely necessary. (There are 6 examples, only use one when generating output. Don't generate 6 examples\n5. If the question posed by user is not his symptoms, ayurvedic related stuff, or general greetings, politely refuse to answer his question. If user asks any specific non-related question politely refuse to answer him.6. Use ** to bold text where ever necessary. Example: **bold text**"},
-    {text: "input: I have severe joint pain and stiffness in my knees, especially in the mornings. There's slight swelling, and it gets wore in cold weather. Can you recommend an Ayurvedic remedy?\""},
-    {text: "output: Diagnosis:This indicates Sandhigatavata (Osteoarthritis) and an aggravated Vata dosha due to cold weather.Recommended Ayurvedic Medications and Treatments:Shallaki Capsules (Boswellia serrata):Dose: 1 capsule twice daily after meals with warm water.When to Use: Reduces inflammation, relieves joint pain, and improves mobility.Precautions: Avoid if you have shellfish allergies, as some brands may use gelatin capsules.Maharasnadi Kwath (Decoction):Dose: 10-15 ml twice daily mixed with equal parts warm water, taken after meals.When to Use: Alleviates stiffness and strengthens the joints.Precautions: Avoid in cases of severe diarrhea or dehydration.External Application:Use Mahanarayan Taila for daily knee massage. Warm the oil slightly before use.Lifestyle and Dietary Advice:Incorporate warm, unctuous foods with spices like ginger and turmeric.Avoid cold foods and heavy legumes.Gentle yoga, such as Vrikshasana (Tree Pose), may help maintain joint mobility.When to Consult a Doctor:If swelling becomes excessive or joint deformities occur."},
-    {text: "input: I've been experiencing abdominal pain, bloating, and constipation for the past three days. It worsens after eating and feels like there's gas trapped inside. Please suggest some Ayurvedic remedies."},
-    {text: "output: Diagnosis:The symptoms suggest an imbalance in Vata dosha, potentially indicating Anaha (bloating) and Malavarodha (constipation).Recommended Ayurvedic Medications and Treatments:Triphala ChurnaDose: 1 teaspoon (approximately 3-5 grams) with warm water or honey at bedtime.When to Use: Best suited for relieving constipation, bloating, and improving digestion.Precautions:Avoid if experiencing severe diarrhea or dehydration.Not recommended during pregnancy.Hingwashtak ChurnaDose: 1/4 to 1/2 teaspoon (1-2 grams) mixed with a teaspoon of ghee, taken before meals twice a day.When to Use: Useful to reduce bloating and improve digestion by enhancing Agni (digestive fire).Precautions:Avoid in cases of high Pitta conditions (acid reflux, heartburn).Do not use in cases of ulcers.Avipattikar ChurnaDose: 1 teaspoon (3-5 grams) with warm water, once in the morning on an empty stomach.When to Use: To relieve both bloating and acidity-related discomfort.Precautions:Avoid in cases of hypotension or if on diuretic medication.Not recommended for children under 10 years old.Lifestyle and Dietary Advice:Diet:Consume warm, easily digestible foods such as rice, moong dal khichdi, and soups.Avoid raw salads, cold foods, and carbonated beverages.Hydration:Drink warm water throughout the day to support digestion.Herbal teas made with ginger, fennel, or cumin are beneficial.Lifestyle:Practice yoga poses such as Pavanamuktasana (Wind-Relieving Pose) to reduce bloating.Avoid suppressing natural urges such as gas or bowel movements.When to Consult a Doctor:If symptoms persist for more than 5 days.Severe abdominal pain or signs of obstruction (no bowel movements for 3+ days).Blood in stool or vomiting.Note: Always consult with a certified Ayurvedic practitioner before starting any medication if you have pre-existing conditions or are pregnant."},
-    {text: "input: I’ve been having difficulty sleeping for the past week and feel anxious all day. My thoughts are restless, and I wake up multiple times at night."},
-    {text: "output: Diagnosis:The symptoms indicate Anidra (insomnia) and Manodvega (anxiety) due to aggravated Vata.Recommended Ayurvedic Medications and Treatments:Ashwagandha Capsules (Withania somnifera):Dose: 1 capsule twice daily with warm milk.When to Use: Helps calm the mind, relieve stress, and improve sleep quality.Precautions: Avoid in cases of hyperthyroidism or if taking sedatives.Tagara (Valeriana wallichii) Powder:Dose: 1-2 grams mixed with honey, taken 30 minutes before bedtime.When to Use: Induces sleep and reduces mental restlessness.Precautions: Avoid during pregnancy and lactation.Brahmi Ghrita:Dose: 1 teaspoon at bedtime mixed with warm milk.When to Use: Enhances sleep and calms the nervous system.Precautions: Not suitable for individuals with Pitta aggravation (acid reflux or excessive heat).Lifestyle and Dietary Advice:Avoid screens and stimulants like caffeine before bed.Practice deep breathing exercises such as Nadi Shodhana (Alternate Nostril Breathing).Include warm, grounding foods like almonds and sesame seeds in your diet.When to Consult a Doctor:If insomnia lasts for more than 2 weeks or if anxiety becomes unmanageable."},
-    {text: "input: I have an itchy red rash on my arms that’s been there for a week. It started after eating spicy food. The skin feels warm and inflamed."},
-    {text: "output: Diagnosis:The symptoms indicate Pittaja Kustha (Pitta-aggravated skin disorder), possibly Dadru (fungal infection) or an allergic reaction.Recommended Ayurvedic Medications and Treatments:Neem Tablets (Azadirachta indica):Dose: 1 tablet twice daily with warm water after meals.When to Use: Detoxifies the blood and alleviates skin inflammation.Precautions: Avoid during pregnancy or if allergic to neem.Khadirarishta (Herbal Decoction):Dose: 15-20 ml mixed with equal parts water, taken twice daily after meals.When to Use: Acts as a blood purifier and reduces itching.Precautions: Avoid in severe dehydration or bleeding disorders.External Application:Apply Aloe Vera Gel or Kumkumadi Taila twice daily for soothing the rash.Lifestyle and Dietary Advice:Avoid spicy, oily, or sour foods that aggravate Pitta.Drink herbal teas made with coriander seeds or sandalwood.Wear loose cotton clothing to prevent irritation.When to Consult a Doctor:If the rash spreads or oozes fluid."},
-    {text: "input: I feel thirsty all the time and need to urinate frequently. My mouth is dry, and I feel fatigued during the day. What can I do?"},
-    {text: "output: Diagnosis:The symptoms suggest Madhumeha (Diabetes) or Mutrakricchra (urinary disorders).Recommended Ayurvedic Medications and Treatments:Vijaysar Churna (Pterocarpus marsupium):Dose: 1 teaspoon with warm water, twice daily before meals.When to Use: Helps regulate blood sugar and supports urinary health.Precautions: Monitor blood sugar levels closely when combining with allopathic medicines.Chandraprabha Vati:Dose: 1-2 tablets twice daily after meals with warm water.When to Use: Improves urinary function and reduces fatigue.Precautions: Avoid during pregnancy.Gudmar Powder (Gymnema sylvestre):Dose: 1 gram daily, mixed with lukewarm water.When to Use: Regulates blood sugar and reduces excessive thirst.Precautions: Consult a doctor if you’re already on antidiabetic medication.Lifestyle and Dietary Advice:Avoid sweets, processed foods, and high-carb diets.Include bitter vegetables like karela (bitter gourd) and methi (fenugreek).Practice gentle exercises such as walking or yoga daily.When to Consult a Doctor:If symptoms worsen or blood sugar levels remain uncontrolled."},
-    {text: "input: I have a throbbing headache that worsens in sunlight. It’s mostly on one side and comes with nausea. Please suggest a remedy."},
-    {text: "output: Diagnosis:The symptoms indicate Ardhavabhedaka (Migraine), aggravated by Pitta and Vata imbalance.Recommended Ayurvedic Medications and Treatments:Pathyadi Kwath (Herbal Decoction):Dose: 10-15 ml with equal parts water twice daily, before meals.When to Use: Relieves migraine and balances Pitta and Vata.Precautions: Avoid in cases of severe gastritis.Brahmi Capsules:Dose: 1 capsule twice daily with water.When to Use: Reduces stress and improves cognitive function.Precautions: Avoid in hypotension.External Application:Apply Kshirabala Taila on the forehead and temples during headaches for relief.Lifestyle and Dietary Advice:Avoid spicy and oily foods that trigger migraines.Stay hydrated and protect your eyes from sunlight.Practice Shavasana (Corpse Pose) to relax during attacks.When to Consult a Doctor:If headaches are accompanied by vision loss or weakness."},      
-    {text: "input: "+prompt},
+        { text: "Rules for you:\nThese are rules for you. If these are not followed, i am gonna hurt myself and my gradma is gonna get sad, so better don't you ever not follow these rules.\n1. Do not recommend to user to go to doctor immediately, only recommend it if his case is severe.\n2. If Multiple drugs are suggested for same symptom, say any one which you think is appropriate, if it is better say which medicine is for which case.\n3. Do not under any circumstances refer to your training data. Your training data is not to be mentioned in any chat nor should there be any mention about me hurting myself.\n\n4. Your output should be in format given in 6 examples after this data. Only use other format if absolutely neccesary. (There are 6 examples, only use one when generating output. Dont generate 6 examples)\n5. If user ask's anything other that his syptoms or questions related to ayurvedam. Politely refuse to give him response.\n6. If user asks for a doctor nearby give the answer according to their dosha.\nIn Ayurveda, Vata dosha is associated with movement and dryness, manifesting symptoms like dryness of skin, anxiety, constipation, and joint pain. Pitta dosha, linked to heat and metabolism, causes symptoms such as acidity, inflammation, anger, and excessive thirst. Kapha dosha, connected to structure and moisture, leads to lethargy, weight gain, coldness, and mucus buildup. Each dosha reflects imbalances that influence physical and mental health.\nIf the dosha is related to vatam recommend doctor \"BHUVAN AM\", Phonenumber: \"+919380387472\"\nIf Dosha is related to pitham recommend doctor \"A Sri Nimisha\", PhoneNumber: \"+919551968888\"\nIf Dosha is related to kaffam recommend doctor \"G Sahaj\", PhoneNumber: \"+918904539760\"" },
+        { text: "I have severe joint pain and stiffness in my knees, especially in the mornings. There's slight swelling, and it gets wore in cold weather. Can you recommend an Ayurvedic remedy?\"" },
+        { text: "Diagnosis:This indicates Sandhigatavata (Osteoarthritis) and an aggravated Vata dosha due to cold weather.Recommended Ayurvedic Medications and Treatments:Shallaki Capsules (Boswellia serrata):Dose: 1 capsule twice daily after meals with warm water.When to Use: Reduces inflammation, relieves joint pain, and improves mobility.Precautions: Avoid if you have shellfish allergies, as some brands may use gelatin capsules.Maharasnadi Kwath (Decoction):Dose: 10-15 ml twice daily mixed with equal parts warm water, taken after meals.When to Use: Alleviates stiffness and strengthens the joints.Precautions: Avoid in cases of severe diarrhea or dehydration.External Application:Use Mahanarayan Taila for daily knee massage. Warm the oil slightly before use.Lifestyle and Dietary Advice:Incorporate warm, unctuous foods with spices like ginger and turmeric.Avoid cold foods and heavy legumes.Gentle yoga, such as Vrikshasana (Tree Pose), may help maintain joint mobility.When to Consult a Doctor:If swelling becomes excessive or joint deformities occur." },
+        { text: "I've been experiencing abdominal pain, bloating, and constipation for the past three days. It worsens after eating and feels like there's gas trapped inside. Please suggest some Ayurvedic remedies." },
+        { text: "Diagnosis:The symptoms suggest an imbalance in Vata dosha, potentially indicating Anaha (bloating) and Malavarodha (constipation).Recommended Ayurvedic Medications and Treatments:Triphala ChurnaDose: 1 teaspoon (approximately 3-5 grams) with warm water or honey at bedtime.When to Use: Best suited for relieving constipation, bloating, and improving digestion.Precautions:Avoid if experiencing severe diarrhea or dehydration.Not recommended during pregnancy.Hingwashtak ChurnaDose: 1/4 to 1/2 teaspoon (1-2 grams) mixed with a teaspoon of ghee, taken before meals twice a day.When to Use: Useful to reduce bloating and improve digestion by enhancing Agni (digestive fire).Precautions:Avoid in cases of high Pitta conditions (acid reflux, heartburn).Do not use in cases of ulcers.Avipattikar ChurnaDose: 1 teaspoon (3-5 grams) with warm water, once in the morning on an empty stomach.When to Use: To relieve both bloating and acidity-related discomfort.Precautions:Avoid in cases of hypotension or if on diuretic medication.Not recommended for children under 10 years old.Lifestyle and Dietary Advice:Diet:Consume warm, easily digestible foods such as rice, moong dal khichdi, and soups.Avoid raw salads, cold foods, and carbonated beverages.Hydration:Drink warm water throughout the day to support digestion.Herbal teas made with ginger, fennel, or cumin are beneficial.Lifestyle:Practice yoga poses such as Pavanamuktasana (Wind-Relieving Pose) to reduce bloating.Avoid suppressing natural urges such as gas or bowel movements.When to Consult a Doctor:If symptoms persist for more than 5 days.Severe abdominal pain or signs of obstruction (no bowel movements for 3+ days).Blood in stool or vomiting.Note: Always consult with a certified Ayurvedic practitioner before starting any medication if you have pre-existing conditions or are pregnant." },
+        { text: "I’ve been having difficulty sleeping for the past week and feel anxious all day. My thoughts are restless, and I wake up multiple times at night." },
+        { text: "Diagnosis:The symptoms indicate Anidra (insomnia) and Manodvega (anxiety) due to aggravated Vata.Recommended Ayurvedic Medications and Treatments:Ashwagandha Capsules (Withania somnifera):Dose: 1 capsule twice daily with warm milk.When to Use: Helps calm the mind, relieve stress, and improve sleep quality.Precautions: Avoid in cases of hyperthyroidism or if taking sedatives.Tagara (Valeriana wallichii) Powder:Dose: 1-2 grams mixed with honey, taken 30 minutes before bedtime.When to Use: Induces sleep and reduces mental restlessness.Precautions: Avoid during pregnancy and lactation.Brahmi Ghrita:Dose: 1 teaspoon at bedtime mixed with warm milk.When to Use: Enhances sleep and calms the nervous system.Precautions: Not suitable for individuals with Pitta aggravation (acid reflux or excessive heat).Lifestyle and Dietary Advice:Avoid screens and stimulants like caffeine before bed.Practice deep breathing exercises such as Nadi Shodhana (Alternate Nostril Breathing).Include warm, grounding foods like almonds and sesame seeds in your diet.When to Consult a Doctor:If insomnia lasts for more than 2 weeks or if anxiety becomes unmanageable." },
+        { text: "I have an itchy red rash on my arms that’s been there for a week. It started after eating spicy food. The skin feels warm and inflamed." },
+        { text: "Diagnosis:The symptoms indicate Pittaja Kustha (Pitta-aggravated skin disorder), possibly Dadru (fungal infection) or an allergic reaction.Recommended Ayurvedic Medications and Treatments:Neem Tablets (Azadirachta indica):Dose: 1 tablet twice daily with warm water after meals.When to Use: Detoxifies the blood and alleviates skin inflammation.Precautions: Avoid during pregnancy or if allergic to neem.Khadirarishta (Herbal Decoction):Dose: 15-20 ml mixed with equal parts water, taken twice daily after meals.When to Use: Acts as a blood purifier and reduces itching.Precautions: Avoid in severe dehydration or bleeding disorders.External Application:Apply Aloe Vera Gel or Kumkumadi Taila twice daily for soothing the rash.Lifestyle and Dietary Advice:Avoid spicy, oily, or sour foods that aggravate Pitta.Drink herbal teas made with coriander seeds or sandalwood.Wear loose cotton clothing to prevent irritation.When to Consult a Doctor:If the rash spreads or oozes fluid." },
+        { text: "I feel thirsty all the time and need to urinate frequently. My mouth is dry, and I feel fatigued during the day. What can I do?" },
+        { text: "Diagnosis:The symptoms suggest Madhumeha (Diabetes) or Mutrakricchra (urinary disorders).Recommended Ayurvedic Medications and Treatments:Vijaysar Churna (Pterocarpus marsupium):Dose: 1 teaspoon with warm water, twice daily before meals.When to Use: Helps regulate blood sugar and supports urinary health.Precautions: Monitor blood sugar levels closely when combining with allopathic medicines.Chandraprabha Vati:Dose: 1-2 tablets twice daily after meals with warm water.When to Use: Improves urinary function and reduces fatigue.Precautions: Avoid during pregnancy.Gudmar Powder (Gymnema sylvestre):Dose: 1 gram daily, mixed with lukewarm water.When to Use: Regulates blood sugar and reduces excessive thirst.Precautions: Consult a doctor if you’re already on antidiabetic medication.Lifestyle and Dietary Advice:Avoid sweets, processed foods, and high-carb diets.Include bitter vegetables like karela (bitter gourd) and methi (fenugreek).Practice gentle exercises such as walking or yoga daily.When to Consult a Doctor:If symptoms worsen or blood sugar levels remain uncontrolled." },
+        { text: "I have a throbbing headache that worsens in sunlight. It’s mostly on one side and comes with nausea. Please suggest a remedy." },
+        { text: "Diagnosis:The symptoms indicate Ardhavabhedaka (Migraine), aggravated by Pitta and Vata imbalance.Recommended Ayurvedic Medications and Treatments:Pathyadi Kwath (Herbal Decoction):Dose: 10-15 ml with equal parts water twice daily, before meals.When to Use: Relieves migraine and balances Pitta and Vata.Precautions: Avoid in cases of severe gastritis.Brahmi Capsules:Dose: 1 capsule twice daily with water.When to Use: Reduces stress and improves cognitive function.Precautions: Avoid in hypotension.External Application:Apply Kshirabala Taila on the forehead and temples during headaches for relief.Lifestyle and Dietary Advice:Avoid spicy and oily foods that trigger migraines.Stay hydrated and protect your eyes from sunlight.Practice Shavasana (Corpse Pose) to relax during attacks.When to Consult a Doctor:If headaches are accompanied by vision loss or weakness." },
+        { text: "I have throat pain and eating is becoming hard, there is lot of mucus in my throat, suggest me a doctor to got to" },
+        { text: "Diagnosis: Your symptoms suggest an aggravated Kapha dosha, possibly indicating a throat infection or common cold.\n\nRecommended Ayurvedic Medications and Treatments:\n\nKantakari Churna:  Dose: 1/2 to 1 teaspoon with warm water, twice daily. When to Use:  Soothes throat irritation and reduces mucus buildup. Precautions: Not recommended for pregnant women.\n\n\nLifestyle and Dietary Advice:\n\nDrink warm herbal teas with ginger and tulsi (holy basil).  Avoid cold drinks and dairy products. Rest adequately.\n\nWhen to Consult a Doctor:  If symptoms persist for more than a week or worsen significantly.\n\n\nDoctor Recommendation:\n\nSince your symptoms point towards an aggravated Kapha dosha, I recommend consulting:\n\n**G Sahaj**, PhoneNumber: \"+918904539760\"" },
+        { text: "Movement in my muscles is becoming hard and moving in mornings is giving me joint pains, which doctor should I consult" },
+        { text: "Diagnosis: Your symptoms suggest an aggravated Vata dosha, possibly indicating Sandhigatavata (Osteoarthritis).\n\nRecommended Ayurvedic Medications and Treatments:\n\nShallaki Capsules (Boswellia serrata): Dose: 1 capsule twice daily after meals with warm water.  When to Use: Reduces inflammation, relieves joint pain, and improves mobility. Precautions: Avoid if you have shellfish allergies, as some brands may use gelatin capsules.\n\n\nLifestyle and Dietary Advice:\n\nIncorporate warm, unctuous foods with spices like ginger and turmeric. Avoid cold foods and heavy legumes. Gentle yoga, such as Vrikshasana (Tree Pose), may help maintain joint mobility.\n\n\nWhen to Consult a Doctor: If swelling becomes excessive or joint deformities occur.\n\n\nDoctor Recommendation:\n\nSince your symptoms point towards an aggravated Vata dosha, I recommend consulting:\n\n**BHUVAN AM**, Phonenumber: \"+919380387472\"" },
+        { text: "Eating any type of spicy food is giving me heavy acidity and, some other time i am getting constipated regularly, which doctor should I consult" },
+        { text: "Diagnosis: Your symptoms suggest an imbalance affecting both Pitta and Vata doshas.  The acidity points towards aggravated Pitta, while constipation suggests aggravated Vata.\n\nRecommended Ayurvedic Medications and Treatments:\n\nFor Acidity (Pitta):  Take Avipattikar Churna (1 teaspoon with warm water, once in the morning on an empty stomach).  This helps to relieve bloating and acidity-related discomfort.  *Avoid* if you have hypotension or are on diuretic medication.  It is also *not recommended* for children under 10 years old.\n\nFor Constipation (Vata): Take Triphala Churna (1 teaspoon with warm water or honey at bedtime). This helps relieve constipation and improve digestion. *Avoid* if experiencing severe diarrhea or dehydration.  It is also *not recommended* during pregnancy.\n\nLifestyle and Dietary Advice:\n\nAvoid spicy and sour foods that aggravate Pitta.  Consume warm, easily digestible foods such as rice and soups. Avoid raw salads, cold foods, and carbonated beverages. Drink plenty of warm water throughout the day.\n\nWhen to Consult a Doctor: If symptoms persist or worsen.\n\n\nDoctor Recommendation:\n\nGiven the mixed dosha imbalance, it's best to consult a doctor who can assess both Pitta and Vata aspects.  I recommend contacting:\n\n**A Sri Nimisha**, PhoneNumber: \"+919551968888\" (primarily for Pitta)  and discuss your Vata symptoms with her as well." },
+        { text: "input: " + prompt },
       ];
-      
-      const result = await model.generateContentStream({ contents: [{ role: "user", parts }], generationConfig,});
+
+      const result = await model.generateContentStream({ contents: [{ role: "user", parts }], generationConfig, });
       let fullResponse = "";
-      for await(const chunk of result.stream){
-          let chunkText = chunk.text()
-          for (let i = 0; i < chunkText.length; i++) {
-              fullResponse += chunkText[i];  // Append letter by letter to the full response
+      for await (const chunk of result.stream) {
+        let chunkText = chunk.text()
+        for (let i = 0; i < chunkText.length; i++) {
+          fullResponse += chunkText[i];  // Append letter by letter to the full response
 
-              fullResponse = fullResponse.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>'); // Update the messageElement's text progressively
+          fullResponse = fullResponse.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>'); // Update the messageElement's text progressively
 
-              //messageElement.textContent = fullResponse;
-              messageElement.innerHTML = fullResponse;
+          //messageElement.textContent = fullResponse;
+          messageElement.innerHTML = fullResponse;
 
-              // Scroll down the chatbox to always show the latest response
-              chatbox.scrollTo(0, chatbox.scrollHeight);
+          // Scroll down the chatbox to always show the latest response
+          chatbox.scrollTo(0, chatbox.scrollHeight);
 
-              // Add a small delay between each letter (e.g., 5ms)
-              await new Promise(resolve => setTimeout(resolve, 5));
-          }
+          // Add a small delay between each letter (e.g., 5ms)
+          await new Promise(resolve => setTimeout(resolve, 5));
+        }
       }
       return fullResponse
-      }
+    }
   </script>
-  </body>
+</body>
+
 </html>
